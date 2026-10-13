@@ -14,7 +14,9 @@ class MotorJuego {
   final double posicionMeta;
   final double anchoNivel;
 
-  int vidas = 3;
+  static const int vidasIniciales = 3;
+
+  int vidas = vidasIniciales;
   int puntaje = 0;
   EstadoJuego estado = EstadoJuego.jugando;
 
@@ -41,7 +43,9 @@ class MotorJuego {
     if (estado != EstadoJuego.jugando) return;
 
     final yAnterior = personaje.y;
+    final xAnterior = personaje.x;
     MotorFisica.moverHorizontal(personaje, deltaX, anchoNivel);
+    MotorFisica.resolverColisionLateral(personaje, plataformas, xAnterior);
     MotorFisica.aplicarGravedad(personaje);
     MotorFisica.resolverColisionConPiso(personaje, plataformas, yAnterior);
 

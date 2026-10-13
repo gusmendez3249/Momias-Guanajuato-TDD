@@ -17,6 +17,28 @@ class MotorFisica {
     }
   }
 
+  /// Evita atravesar plataformas por el costado. Igual que en el piso, necesita
+  /// la posicion anterior (xAnterior) para saber de que lado venia el personaje.
+  /// Si solo roza el borde superior o inferior no hay empuje lateral.
+  static void resolverColisionLateral(
+    Personaje personaje,
+    List<Rectangulo> plataformas,
+    double xAnterior,
+  ) {
+    for (final plataforma in plataformas) {
+      if (!personaje.rectangulo.intersectaCon(plataforma)) continue;
+
+      final veniaDeLaIzquierda = xAnterior + personaje.ancho <= plataforma.x;
+      final veniaDeLaDerecha = xAnterior >= plataforma.x + plataforma.ancho;
+
+      if (veniaDeLaIzquierda) {
+        personaje.x = plataforma.x - personaje.ancho;
+      } else if (veniaDeLaDerecha) {
+        personaje.x = plataforma.x + plataforma.ancho;
+      }
+    }
+  }
+
   static bool haLlegadoALaMeta(Personaje personaje, double posicionMeta) {
     return personaje.x >= posicionMeta;
   }

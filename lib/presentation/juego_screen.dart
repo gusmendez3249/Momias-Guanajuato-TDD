@@ -2,17 +2,19 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../logica/calaverita.dart';
+import '../datos/preferencias_puntaje.dart';
 import '../logica/estado_juego.dart';
-import '../logica/momia.dart';
+import '../logica/mejor_puntaje.dart';
 import '../logica/motor_juego.dart';
-import '../logica/personaje.dart';
-import '../logica/rectangulo.dart';
+import '../logica/niveles.dart';
+import 'vidas_hud.dart';
 
 /// Solo traduce el estado de MotorJuego a pixeles.
 /// Ninguna colision ni puntaje se decide aqui.
 class JuegoScreen extends StatefulWidget {
-  const JuegoScreen({super.key});
+  final RepositorioPuntaje? repositorio;
+
+  const JuegoScreen({super.key, this.repositorio});
 
   @override
   State<JuegoScreen> createState() => _JuegoScreenState();
@@ -20,12 +22,20 @@ class JuegoScreen extends StatefulWidget {
 
 class _JuegoScreenState extends State<JuegoScreen> {
   late MotorJuego _motor;
+  late final MejorPuntaje _mejorPuntaje;
   Timer? _bucle;
   double _direccion = 0;
+  int _indiceNivel = 0;
+  int _puntajeBase = 0; // puntaje acumulado al empezar el nivel actual
+  int _mejor = 0;
 
   @override
   void initState() {
     super.initState();
+    _mejorPuntaje = MejorPuntaje(widget.repositorio ?? PreferenciasPuntaje());
+    _mejorPuntaje.actual().then((valor) {
+      if (mounted) setState(() => _mejor = valor);
+    });
     _iniciarNivel();
     _iniciarBucle();
   }
@@ -37,25 +47,9 @@ class _JuegoScreenState extends State<JuegoScreen> {
   }
 
   void _iniciarNivel() {
-    _motor = MotorJuego(
-      personaje: Personaje(x: 20, y: 100),
-      plataformas: const [
-        Rectangulo(x: 0, y: 300, ancho: 2000, alto: 40),
-        Rectangulo(x: 300, y: 220, ancho: 120, alto: 20),
-        Rectangulo(x: 550, y: 160, ancho: 120, alto: 20),
-      ],
-      momias: [
-        Momia(x: 320, y: 268, limiteIzquierdo: 300, limiteDerecho: 420),
-        Momia(x: 900, y: 268, limiteIzquierdo: 850, limiteDerecho: 1100),
-      ],
-      calaveritas: [
-        Calaverita(x: 360, y: 180),
-        Calaverita(x: 600, y: 120),
-        Calaverita(x: 1200, y: 260),
-      ],
-      posicionMeta: 1900,
-      anchoNivel: 2000,
-    );
+    _motor = Niveles.todos[_indiceNivel].crearMotor();
+    _motor.puntaje = _puntajeBase;
+    _direccion = 0;
   }
 
   void _iniciarBucle() {
@@ -63,17 +57,33 @@ class _JuegoScreenState extends State<JuegoScreen> {
       setState(() => _motor.mover(_direccion * 4));
       if (_motor.estado != EstadoJuego.jugando) {
         _bucle?.cancel();
-        _mostrarResultado();
+        _terminarNivel();
       }
     });
   }
 
+  Future<void> _terminarNivel() async {
+    final mejor = await _mejorPuntaje.registrar(_motor.puntaje);
+    if (!mounted) return;
+    setState(() => _mejor = mejor);
+    _mostrarResultado();
+  }
+
   void _mostrarResultado() {
     final gano = _motor.estado == EstadoJuego.ganado;
+    final hayOtroNivel = _indiceNivel < Niveles.todos.length - 1;
+    final textoBoton = gano
+        ? (hayOtroNivel ? 'Siguiente nivel' : 'Jugar de nuevo')
+        : 'Reintentar';
+    final titulo = gano
+        ? (hayOtroNivel
+            ? 'Nivel superado!'
+            : 'Llegaste al Callejón del Beso!')
+        : 'Las momias te atraparon';
 
     showGeneralDialog(
       context: context,
-      barrierDismissible: true,
+      barrierDismissible: false,
       barrierLabel: 'resultado',
       transitionDuration: const Duration(milliseconds: 450),
       pageBuilder: (context, anim1, anim2) => const SizedBox.shrink(),
@@ -82,18 +92,25 @@ class _JuegoScreenState extends State<JuegoScreen> {
         child: FadeTransition(
           opacity: anim1,
           child: AlertDialog(
-            title: Text(
-              gano ? 'Llegaste al Callejón del Beso!' : 'Las momias te atraparon',
-            ),
-            content: Text('Puntaje: ${_motor.puntaje}'),
+            title: Text(titulo),
+            content: Text('Puntaje: ${_motor.puntaje}\nMejor: $_mejor'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  setState(_iniciarNivel);
+                  setState(() {
+                    if (gano && hayOtroNivel) {
+                      _puntajeBase = _motor.puntaje;
+                      _indiceNivel++;
+                    } else if (gano) {
+                      _puntajeBase = 0;
+                      _indiceNivel = 0;
+                    }
+                    _iniciarNivel();
+                  });
                   _iniciarBucle();
                 },
-                child: const Text('Jugar de nuevo'),
+                child: Text(textoBoton),
               ),
             ],
           ),
@@ -117,8 +134,18 @@ class _JuegoScreenState extends State<JuegoScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Vidas: ${_motor.vidas}'),
-                Text('Puntaje: ${_motor.puntaje}'),
+                VidasHud(
+                  vidas: _motor.vidas,
+                  maximo: MotorJuego.vidasIniciales,
+                ),
+                Text(Niveles.todos[_indiceNivel].nombre),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text('Puntaje: ${_motor.puntaje}'),
+                    Text('Mejor: $_mejor'),
+                  ],
+                ),
               ],
             ),
           ),

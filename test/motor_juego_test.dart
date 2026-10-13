@@ -77,6 +77,30 @@ void main() {
     });
   });
 
+  group('colision lateral integrada (reto 1)', () {
+    test('el personaje no puede atravesar una pared caminando hacia ella', () {
+      final personaje = Personaje(x: 100, y: 268);
+      final motor = MotorJuego(
+        personaje: personaje,
+        plataformas: const [
+          Rectangulo(x: 0, y: 300, ancho: 1000, alto: 40),
+          Rectangulo(x: 140, y: 240, ancho: 20, alto: 60), // pared
+        ],
+        momias: const [],
+        calaveritas: const [],
+        posicionMeta: 900,
+        anchoNivel: 1000,
+      );
+
+      for (var i = 0; i < 10; i++) {
+        motor.mover(10);
+      }
+
+      expect(personaje.x, 140 - personaje.ancho);
+      expect(motor.estado, EstadoJuego.jugando);
+    });
+  });
+
   group('integracion', () {
     test('llegar a la meta cambia el estado a ganado', () {
       final personaje = Personaje(x: 495, y: 268);

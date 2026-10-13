@@ -1,10 +1,26 @@
 $ flutter test
 
 juego_screen_test.dart
-  [OK]   la pantalla inicia con 3 vidas y puntaje 0
+  [OK]   VidasHud (reto 2) con 3 vidas muestra 3 corazones llenos y ninguno vacio
+  [OK]   VidasHud (reto 2) con 1 vida muestra 1 corazon lleno y 2 vacios
+  [OK]   VidasHud (reto 2) con 0 vidas todos los corazones estan vacios
+  [OK]   JuegoScreen inicia en el nivel 1 con 3 corazones y puntaje 0
+  [OK]   JuegoScreen muestra el mejor puntaje guardado (reto 4)
+mejor_puntaje_test.dart
+  [OK]   MejorPuntaje (reto 4) registrar guarda el puntaje cuando supera el record
+  [OK]   MejorPuntaje (reto 4) registrar no reemplaza un record mayor
+  [OK]   MejorPuntaje (reto 4) registrar un puntaje igual al record no cambia nada
+  [OK]   MejorPuntaje (reto 4) actual devuelve el record guardado
+  [OK]   PreferenciasPuntaje con shared_preferences (reto 4) sin datos previos el record es 0
+  [OK]   PreferenciasPuntaje con shared_preferences (reto 4) el record guardado se recupera en una instancia nueva
 momia_test.dart
   [OK]   la momia avanza en linea recta mientras no llegue a un limite
   [OK]   la momia invierte direccion al llegar al limite derecho
+  [OK]   momia vertical (reto 3) la momia vertical sube y baja sin moverse en horizontal
+  [OK]   momia vertical (reto 3) la momia vertical invierte direccion al llegar al limite inferior
+  [OK]   momia vertical (reto 3) la momia vertical invierte direccion al llegar al limite superior
+  [OK]   momia vertical (reto 3) una momia vertical derrotada no se mueve
+  [OK]   momia vertical (reto 3) la momia horizontal no se mueve en vertical
   [OK]   una momia derrotada no se mueve
 motor_combate_test.dart
   [OK]   caer sobre la mitad superior de una momia la derrota
@@ -12,6 +28,10 @@ motor_combate_test.dart
   [OK]   chocar de lado mientras se cae (pie bajo la mitad de la momia) NO la derrota
   [OK]   sin interseccion no pasa nada
 motor_fisica_test.dart
+  [OK]   colision lateral con plataformas (reto 1) al venir desde la izquierda el personaje queda pegado al borde izquierdo
+  [OK]   colision lateral con plataformas (reto 1) al venir desde la derecha el personaje queda pegado al borde derecho
+  [OK]   colision lateral con plataformas (reto 1) si el personaje esta por encima de la plataforma no hay empuje lateral
+  [OK]   colision lateral con plataformas (reto 1) si el personaje esta muy por debajo de la plataforma no hay empuje lateral
   [OK]   meta haLlegadoALaMeta es verdadero cuando el personaje alcanza la posicion
   [OK]   meta haLlegadoALaMeta es falso si aun no llega
   [OK]   movimiento horizontal moverHorizontal desplaza al personaje segun el delta recibido
@@ -27,12 +47,19 @@ motor_juego_test.dart
   [OK]   calaveritas una calaverita ya recolectada no vuelve a sumar puntos
   [OK]   vidas y Game Over al chocar lateralmente con una momia se pierde una vida y el personaje regresa al inicio
   [OK]   vidas y Game Over perder la ultima vida cambia el estado a perdido
+  [OK]   colision lateral integrada (reto 1) el personaje no puede atravesar una pared caminando hacia ella
   [OK]   integracion llegar a la meta cambia el estado a ganado
+niveles_test.dart
+  [OK]   el juego tiene al menos dos niveles
+  [OK]   el segundo nivel es mas largo y tiene mas plataformas, momias y calaveritas
+  [OK]   el segundo nivel incluye una momia vertical
+  [OK]   cada nivel tiene la meta dentro de sus limites y arranca en jugando
+  [OK]   crearMotor devuelve estados independientes en cada llamada
 rectangulo_test.dart
   [OK]   dos rectangulos que se traslapan se detectan como interseccion
   [OK]   dos rectangulos separados no se intersectan
 
-25/25 pruebas pasaron - All tests passed!
+50/50 pruebas pasaron - All tests passed!
 
 $ flutter analyze
 No issues found!

@@ -4,6 +4,43 @@ import 'package:momias_guanajuato/logica/personaje.dart';
 import 'package:momias_guanajuato/logica/rectangulo.dart';
 
 void main() {
+  group('colision lateral con plataformas (reto 1)', () {
+    const pared = Rectangulo(x: 100, y: 90, ancho: 50, alto: 40);
+
+    test('al venir desde la izquierda el personaje queda pegado al borde izquierdo', () {
+      // x anterior 60 (borde derecho 92 <= 100); tras moverse quedo en 80 (traslapado).
+      final personaje = Personaje(x: 80, y: 80);
+
+      MotorFisica.resolverColisionLateral(personaje, [pared], 60);
+
+      expect(personaje.x, 100 - personaje.ancho);
+    });
+
+    test('al venir desde la derecha el personaje queda pegado al borde derecho', () {
+      final personaje = Personaje(x: 145, y: 80);
+
+      MotorFisica.resolverColisionLateral(personaje, [pared], 152);
+
+      expect(personaje.x, 150);
+    });
+
+    test('si el personaje esta por encima de la plataforma no hay empuje lateral', () {
+      final personaje = Personaje(x: 120, y: 58); // pie exactamente en y=90
+
+      MotorFisica.resolverColisionLateral(personaje, [pared], 60);
+
+      expect(personaje.x, 120);
+    });
+
+    test('si el personaje esta muy por debajo de la plataforma no hay empuje lateral', () {
+      final personaje = Personaje(x: 120, y: 200);
+
+      MotorFisica.resolverColisionLateral(personaje, [pared], 60);
+
+      expect(personaje.x, 120);
+    });
+  });
+
   group('meta', () {
     test('haLlegadoALaMeta es verdadero cuando el personaje alcanza la posicion', () {
       final personaje = Personaje(x: 1900, y: 0);
