@@ -1,0 +1,38 @@
+$ flutter test
+
+juego_screen_test.dart
+  [OK]   la pantalla inicia con 3 vidas y puntaje 0
+momia_test.dart
+  [OK]   la momia avanza en linea recta mientras no llegue a un limite
+  [OK]   la momia invierte direccion al llegar al limite derecho
+  [OK]   una momia derrotada no se mueve
+motor_combate_test.dart
+  [OK]   caer sobre la mitad superior de una momia la derrota
+  [OK]   chocar de lado con una momia golpea al jugador
+  [OK]   chocar de lado mientras se cae (pie bajo la mitad de la momia) NO la derrota
+  [OK]   sin interseccion no pasa nada
+motor_fisica_test.dart
+  [OK]   meta haLlegadoALaMeta es verdadero cuando el personaje alcanza la posicion
+  [OK]   meta haLlegadoALaMeta es falso si aun no llega
+  [OK]   movimiento horizontal moverHorizontal desplaza al personaje segun el delta recibido
+  [OK]   movimiento horizontal moverHorizontal no deja salir al personaje por el borde izquierdo
+  [OK]   movimiento horizontal moverHorizontal no deja salir al personaje por el borde derecho
+  [OK]   colision con el piso el personaje aterriza sobre una plataforma al caer sobre ella
+  [OK]   colision con el piso el personaje no aterriza si todavia esta muy por encima de la plataforma
+  [OK]   gravedad y salto aplicarGravedad aumenta la velocidad vertical y mueve al personaje hacia abajo
+  [OK]   gravedad y salto saltar solo funciona si el personaje esta en el suelo
+  [OK]   gravedad y salto saltar no hace nada si el personaje ya esta en el aire
+motor_juego_test.dart
+  [OK]   calaveritas recolectar una calaverita suma puntos y la marca como recolectada
+  [OK]   calaveritas una calaverita ya recolectada no vuelve a sumar puntos
+  [OK]   vidas y Game Over al chocar lateralmente con una momia se pierde una vida y el personaje regresa al inicio
+  [OK]   vidas y Game Over perder la ultima vida cambia el estado a perdido
+  [OK]   integracion llegar a la meta cambia el estado a ganado
+rectangulo_test.dart
+  [OK]   dos rectangulos que se traslapan se detectan como interseccion
+  [OK]   dos rectangulos separados no se intersectan
+
+25/25 pruebas pasaron - All tests passed!
+
+$ flutter analyze
+No issues found!
